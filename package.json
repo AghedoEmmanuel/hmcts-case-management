@@ -1,0 +1,29 @@
+{
+  "name": "hmcts-case-management",
+  "version": "1.0.0",
+  "description": "A full-stack case management task application built for HMCTS, enabling caseworkers to create, view, update, and delete tasks linked to case references.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npx ts-node src/index.ts",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AghedoEmmanuel/hmcts-case-management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AghedoEmmanuel/hmcts-case-management/issues"
+  },
+  "homepage": "https://github.com/AghedoEmmanuel/hmcts-case-management#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.27"
+  }
+}
