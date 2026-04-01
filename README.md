@@ -2,85 +2,61 @@
 
 A full-stack case management task application built for HMCTS, enabling caseworkers to create, view, update, and delete tasks linked to case references.
 
+## Project Status
+
+| Layer | Status |
+|---|---|
+| Backend API (Express + PostgreSQL) | ✅ Complete |
+| Backend Unit & Integration Tests (Jest) | ✅ Complete |
+| Frontend (Next.js + Tailwind + ShadCN) | ✅ Complete |
+| Frontend Unit Tests (Jest + React Testing Library) | ✅ Complete |
+
+---
+
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14, TypeScript, Tailwind CSS, ShadCN UI |
-| Backend | Node.js, Express, TypeScript |
-| Database | PostgreSQL |
-| Testing | Jest, Supertest, React Testing Library |
-| Dev Tools | ts-node, ESLint, dotenv |
+**Backend**
+- Node.js + Express + TypeScript
+- PostgreSQL (via `pg` driver)
+- Jest + Supertest (unit & integration tests)
 
----
-
-## Features
-
-- Create tasks with title, description, priority, due date, assigned caseworker, and case reference
-- View all tasks in a sortable list
-- Update task details and status (pending / in-progress / completed)
-- Delete tasks
-- RESTful API with full CRUD support
-- Unit and integration tests with coverage reporting
-- Input validation and structured error responses
-
----
-
-## Project Structure
-```
-hmcts-case-management/
-├── frontend/                  # Next.js application
-│   ├── src/
-│   │   ├── app/               # App router pages
-│   │   ├── components/        # UI components (ShadCN + custom)
-│   │   └── lib/               # API client utilities
-│   ├── jest.config.ts
-│   └── jest.setup.ts
-│
-└── backend/                   # Express API
-    ├── src/
-    │   ├── config/
-    │   │   └── db.ts           # PostgreSQL connection pool
-    │   ├── controllers/
-    │   │   └── taskController.ts
-    │   ├── models/
-    │   │   └── taskModel.ts    # Table schema + init
-    │   ├── routes/
-    │   │   └── taskRoutes.ts
-    │   └── index.ts            # Server entry point
-    ├── tests/
-    │   └── tasks.test.ts       # API integration tests
-    └── jest.config.ts
-```
-
----
-
-## Prerequisites
-
-- Node.js v18+
-- PostgreSQL v14+
-- npm v9+
+**Frontend**
+- Next.js 14 (App Router)
+- Tailwind CSS + ShadCN UI + Shadcn/ui Components
+- TypeScript
+- Jest + React Testing Library (25 unit tests)
 
 ---
 
 ## Getting Started
 
-### 1. Clone the repository
+### Prerequisites
+
+- Node.js v18+
+- PostgreSQL installed and running
+- npm (comes with Node.js)
+
+---
+
+## Installation & Setup
+
+### 1. Database Setup
+
+Create the PostgreSQL database:
 ```bash
-git clone https://github.com/AghedoEmmanuel/hmcts-case-management.git
-cd hmcts-case-management
-```
-
-### 2. Set up the database
-
-Open your PostgreSQL client (psql or pgAdmin) and run:
-```sql
+psql -U postgres
 CREATE DATABASE hmcts_tasks;
+\q
 ```
 
-### 3. Configure environment variables
+### 2. Backend Setup
 
-Create a `.env` file inside the `backend/` folder:
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in the `backend/` folder:
 ```env
 PORT=5000
 DB_HOST=localhost
@@ -90,161 +66,165 @@ DB_USER=postgres
 DB_PASSWORD=your_password_here
 ```
 
-Create a `.env.local` file inside the `frontend/` folder:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
-```
-
-### 4. Install dependencies and run the backend
+Start the development server:
 ```bash
-cd backend
-npm install
 npx ts-node src/index.ts
 ```
 
-The API will be available at `http://localhost:5000`. The tasks table is created automatically on first run.
+The API will be running at `http://localhost:5000`. Verify it's live:
+```bash
+curl http://localhost:5000/health
+# → { "status": "HMCTS Case Management API is running" }
+```
 
-### 5. Install dependencies and run the frontend
+### 3. Backend Testing
 
-Open a new terminal:
+```bash
+cd backend
+npm test
+```
+
+Tests cover all five CRUD endpoints with success and error cases. Coverage report is generated in `backend/coverage/`.
+
+### 4. Frontend Setup
+
+In a new terminal:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-The app will be available at `http://localhost:3000`.
+The frontend will be running at `http://localhost:3000` and will connect to the backend API at `http://localhost:5000`.
 
----
+### 5. Frontend Testing
 
-## API Reference
-
-Base URL: `http://localhost:5000/api`
-
-### Tasks
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/tasks` | Get all tasks |
-| GET | `/tasks/:id` | Get a single task by ID |
-| POST | `/tasks` | Create a new task |
-| PUT | `/tasks/:id` | Update an existing task |
-| DELETE | `/tasks/:id` | Delete a task |
-
-### Request body — POST / PUT
-```json
-{
-  "title": "Prepare hearing bundle",
-  "description": "Collate documents ahead of the 14 June hearing",
-  "status": "pending",
-  "priority": "high",
-  "due_date": "2025-06-10",
-  "assigned_to": "Sarah Okafor",
-  "case_reference": "HMCTS-2025-001"
-}
-```
-
-### Status values
-`pending` | `in-progress` | `completed`
-
-### Priority values
-`low` | `medium` | `high`
-
-### Example response — GET /tasks/:id
-```json
-{
-  "id": 1,
-  "title": "Prepare hearing bundle",
-  "description": "Collate documents ahead of the 14 June hearing",
-  "status": "pending",
-  "priority": "high",
-  "due_date": "2025-06-10T00:00:00.000Z",
-  "assigned_to": "Sarah Okafor",
-  "case_reference": "HMCTS-2025-001",
-  "created_at": "2025-05-01T10:30:00.000Z",
-  "updated_at": "2025-05-01T10:30:00.000Z"
-}
-```
-
-### Health check
-```
-GET /health
-```
-
-Returns `{ "status": "HMCTS Case Management API is running" }`
-
----
-
-## Running Tests
-
-### Backend tests
-```bash
-cd backend
-npm test
-```
-
-Runs all API integration tests using Jest and Supertest with coverage reporting. Tests cover:
-
-- GET all tasks
-- GET task by ID (found + not found)
-- POST create task (valid + missing title)
-- PUT update task (found + not found)
-- DELETE task (found + not found)
-
-### Frontend tests
 ```bash
 cd frontend
 npm test
 ```
 
+Tests include 25 unit tests covering all major components:
+- **TaskForm** (6 tests) - Form creation, editing, validation, submission
+- **TaskList** (9 tests) - Task rendering, selection, filtering, date formatting
+- **TaskDetails** (4 tests) - Task display, edit/delete actions
+- **TaskBadge** (2 tests) - Priority and status badge rendering
+- **hmctsHeader** (2 tests) - Header layout and content
+
+Test coverage report is generated in `frontend/coverage/`.
+
+### 6. Frontend Build
+
+```bash
+cd frontend
+npm run build
+```
+
 ---
 
-## Database Schema
-```sql
-CREATE TABLE tasks (
-  id             SERIAL PRIMARY KEY,
-  title          VARCHAR(255) NOT NULL,
-  description    TEXT,
-  status         VARCHAR(50)  DEFAULT 'pending',
-  priority       VARCHAR(20)  DEFAULT 'medium',
-  due_date       DATE,
-  assigned_to    VARCHAR(255),
-  case_reference VARCHAR(100),
-  created_at     TIMESTAMP    DEFAULT NOW(),
-  updated_at     TIMESTAMP    DEFAULT NOW()
-);
+---
+
+## API Reference
+
+Base URL: `http://localhost:5000/api/tasks`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/tasks` | Get all tasks |
+| GET | `/api/tasks/:id` | Get a single task by ID |
+| POST | `/api/tasks` | Create a new task |
+| PUT | `/api/tasks/:id` | Update an existing task |
+| DELETE | `/api/tasks/:id` | Delete a task |
+
+---
+
+### Task Schema
+```json
+{
+  "id": 1,
+  "title": "Prepare hearing bundle",
+  "description": "Compile all documents for the upcoming hearing",
+  "status": "pending",
+  "priority": "high",
+  "due_date": "2025-06-01",
+  "assigned_to": "Caseworker Name",
+  "case_reference": "HMCTS-2025-001",
+  "created_at": "2025-03-30T10:00:00.000Z",
+  "updated_at": "2025-03-30T10:00:00.000Z"
+}
+```
+
+**Status values:** `pending` · `in-progress` · `completed`  
+**Priority values:** `low` · `medium` · `high`
+
+---
+
+## Project Structure
+```
+hmcts-case-management/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── db.ts                    # PostgreSQL connection pool
+│   │   ├── controllers/
+│   │   │   └── taskControllers.ts       # CRUD logic
+│   │   ├── models/
+│   │   │   └── taskModel.ts             # DB schema / table init
+│   │   ├── routes/
+│   │   │   └── taskRoutes.ts            # Express route definitions
+│   │   └── index.ts                     # Server entry point
+│   ├── test/
+│   │   └── task.tests.ts                # Jest + Supertest API tests
+│   ├── coverage/                        # Test coverage reports
+│   ├── .env
+│   ├── jest.config.js
+│   └── tsconfig.json
+├── frontend/
+│   ├── app/
+│   │   ├── globals.css                  # Global styles
+│   │   ├── layout.tsx                   # Root layout
+│   │   └── page.tsx                     # Home page
+│   ├── components/
+│   │   ├── shared/
+│   │   │   ├── TaskForm.tsx             # Create/edit task form
+│   │   │   ├── TaskList.tsx             # Task list display
+│   │   │   ├── TaskDetails.tsx          # Task detail view
+│   │   │   ├── TaskBadge.tsx            # Priority/status badges
+│   │   │   └── hmctsHeader.tsx          # Header component
+│   │   └── ui/                          # ShadCN UI components
+│   ├── lib/
+│   │   ├── api.ts                       # API client functions
+│   │   └── utils.ts                     # Utility functions
+│   ├── types/
+│   │   └── task.ts                      # TypeScript type definitions
+│   ├── __tests__/
+│   │   ├── TaskForm.test.tsx            # Form component tests
+│   │   ├── TaskList.test.tsx            # List component tests
+│   │   ├── TaskDetails.test.tsx         # Details component tests
+│   │   ├── TaskBadge.test.tsx           # Badge component tests
+│   │   └── hmctsHeader.test.tsx         # Header component tests
+│   ├── coverage/                        # Test coverage reports
+│   ├── jest.config.js                   # Jest configuration
+│   ├── jest.setup.js                    # Jest setup file
+│   ├── next.config.ts                   # Next.js configuration
+│   └── tsconfig.json
+└── README.md                            # This file
 ```
 
 ---
 
 ## Security Considerations
 
-This project was built with security awareness informed by an MSc in Cybersecurity (Teesside University):
+This project was developed with security principles from an MSc in Cybersecurity (Teesside University) in mind:
 
-- Environment variables used for all database credentials — never hardcoded
+- Environment variables used for all database credentials — no hardcoded secrets
+- Input passed via parameterised queries throughout — SQL injection mitigated by design
 - CORS configured on the Express server
-- Parameterised SQL queries throughout — no raw string concatenation, preventing SQL injection
-- Input validation at the controller layer
-- `.env` files excluded from version control via `.gitignore`
-
----
-
-## .gitignore
-
-Make sure your root `.gitignore` includes:
-```
-node_modules/
-.env
-.env.local
-dist/
-coverage/
-.next/
-```
+- `.env` excluded from version control via `.gitignore`
 
 ---
 
 ## Author
 
 Emmanuel Aghedo  
-GitHub: [AghedoEmmanuel](https://github.com/AghedoEmmanuel)  
-Portfolio: [aghedo-sigma.vercel.app](https://aghedo-sigma.vercel.app)
+[GitHub](https://github.com/AghedoEmmanuel) · [Portfolio](https://aghedo-sigma.vercel.app)

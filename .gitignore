@@ -44,3 +44,6 @@ Thumbs.db
 # Build output
 dist/
 build/
+
+frontend/AGENTS.md
+frontend/CLAUDE.md
