@@ -47,3 +47,5 @@ build/
 
 frontend/AGENTS.md
 frontend/CLAUDE.md
+
+package-lock.json
